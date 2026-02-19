@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patent Fee Matrix</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Patent Cost Estimator</p>
+        <h1>Jurisdiction-Wise Patent Fee Matrix</h1>
+        <p class="subtitle">
+          Working estimate for India, EP, US, UK, Korea, Japan, China, PCT and
+          Australia with INR conversion.
+        </p>
+      </div>
+      <div class="status-panel">
+        <p class="status-label">FX Data</p>
+        <p id="rateStatus" class="status-text">Loading live exchange rates...</p>
+        <button id="refreshRatesBtn" type="button" class="ghost-btn">
+          Refresh Rates
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="controls">
+        <h2>Common Inputs</h2>
+
+        <div class="field-group">
+          <label>View Mode</label>
+          <div class="segmented">
+            <label>
+              <input
+                type="radio"
+                name="viewMode"
+                value="single"
+                checked
+              />Single
+            </label>
+            <label>
+              <input type="radio" name="viewMode" value="all" />All
+              Jurisdictions
+            </label>
+          </div>
+        </div>
+
+        <div class="field-group" id="jurisdictionField">
+          <label for="jurisdictionSelect">Country of Filing</label>
+          <select id="jurisdictionSelect">
+            <option value="IN">India</option>
+            <option value="EP">EP (European Patent Office)</option>
+            <option value="US">United States</option>
+            <option value="UK">United Kingdom</option>
+            <option value="KR">Korea</option>
+            <option value="JP">Japan</option>
+            <option value="CN">China</option>
+            <option value="PCT">PCT / International</option>
+            <option value="AU">Australia</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="applicantType">Type of Applicant</label>
+          <select id="applicantType">
+            <option value="startup">Start-up</option>
+            <option value="individual">Individual</option>
+            <option value="sme">SME</option>
+            <option value="company">Company</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="applicationType">Type of Application</label>
+          <select id="applicationType">
+            <option value="provisional">Provisional Drafting</option>
+            <option value="complete">Complete Drafting & Filing</option>
+            <option value="foreign" selected>
+              Foreign Filing (Direct/National)
+            </option>
+            <option value="pct">PCT Filing (International / Follow-on)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="priorArtSearch">Prior Art Search</label>
+          <select id="priorArtSearch">
+            <option value="yes" selected>Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="priorArtType">Type of Prior Art Search</label>
+          <select id="priorArtType">
+            <option value="quick">Quick Search</option>
+            <option value="extensive">Extensive Search</option>
+          </select>
+        </div>
+
+        <div class="two-col">
+          <div class="field-group">
+            <label for="claimCount">Claims (for claim-based offices)</label>
+            <input id="claimCount" type="number" min="1" value="10" />
+          </div>
+          <div class="field-group">
+            <label for="pageCount">Pages (for page-based fees)</label>
+            <input id="pageCount" type="number" min="1" value="30" />
+          </div>
+        </div>
+
+        <div class="field-group pct-only">
+          <label for="pctEfilingReduction">PCT e-filing reduction</label>
+          <select id="pctEfilingReduction">
+            <option value="none">None</option>
+            <option value="100">Request not character-coded (-100 CHF)</option>
+            <option value="200">Request character-coded (-200 CHF)</option>
+            <option value="300">
+              Full character-coded filing (-300 CHF)
+            </option>
+          </select>
+        </div>
+
+        <div class="field-group pct-only">
+          <label for="pctManualAddOn">
+            Additional PCT fees (manual, CHF)
+          </label>
+          <input id="pctManualAddOn" type="number" min="0" value="0" />
+        </div>
+
+        <details class="panel">
+          <summary>Professional Fee Inputs (INR, editable)</summary>
+          <div class="fee-grid">
+            <label>
+              Quick Search
+              <input id="feeQuick" type="number" min="0" value="12000" />
+            </label>
+            <label>
+              Extensive Search
+              <input id="feeExtensive" type="number" min="0" value="22000" />
+            </label>
+            <label>
+              Provisional Drafting
+              <input id="feeProvisional" type="number" min="0" value="30000" />
+            </label>
+            <label>
+              Complete Drafting & Filing
+              <input id="feeComplete" type="number" min="0" value="70000" />
+            </label>
+            <label>
+              Foreign Filing Support
+              <input id="feeForeign" type="number" min="0" value="50000" />
+            </label>
+            <label>
+              PCT Filing Support
+              <input id="feePct" type="number" min="0" value="65000" />
+            </label>
+          </div>
+        </details>
+
+        <details class="panel pct-only">
+          <summary>PCT to EP: Optional Validation Estimates (EUR)</summary>
+          <p class="hint">
+            Use this for post-grant validation estimates in selected EPC states.
+            These are user-entered estimates, not official EPO schedule values.
+          </p>
+          <div id="epValidationWrap" class="validation-grid"></div>
+        </details>
+
+        <details class="panel">
+          <summary>Research Notes and Sources</summary>
+          <p class="small">
+            Government fees are taken from official office/government schedules.
+            Professional fees are configurable estimates.
+          </p>
+          <ul class="source-list">
+            <li>
+              Example calculators:
+              <a href="https://videaimip.com/calc.html" target="_blank"
+                >Videaim IP</a
+              >,
+              <a href="https://ipflair.com/" target="_blank">IPFlair</a>,
+              <a href="https://1stopip.com/" target="_blank">1STOP IP</a>
+            </li>
+            <li>
+              Exchange rates:
+              <a href="https://www.frankfurter.app/" target="_blank"
+                >Frankfurter (ECB reference rates)</a
+              >
+            </li>
+          </ul>
+        </details>
+
+        <p class="disclaimer">
+          This tool is a working estimate and should be cross-checked before
+          filing. Fee rules vary by claim count, pages, filing route, entity
+          qualification and office updates.
+        </p>
+      </section>
+
+      <section class="results">
+        <div class="summary-block">
+          <h2>Estimate Snapshot</h2>
+          <div class="summary-table-wrap">
+            <table class="summary-table">
+              <thead>
+                <tr>
+                  <th>Jurisdiction</th>
+                  <th>Govt. Fee (Local)</th>
+                  <th>Total (INR)</th>
+                </tr>
+              </thead>
+              <tbody id="summaryBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="cards" class="cards"></div>
+      </section>
+    </main>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
