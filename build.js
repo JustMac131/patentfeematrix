@@ -24,7 +24,7 @@ const cwd = process.cwd();
 const root = path.basename(cwd) === "dist" ? cwd : path.join(cwd, "dist");
 const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".svg": "image/svg+xml", ".md": "text/markdown" };
 
-export default async function handler(request) {
+async function handler(request) {
   const pathname = decodeURIComponent(new URL(request.url).pathname);
   const relative = pathname === "/" ? "index.html" : pathname.replace(/^\\/+/, "");
   const file = path.resolve(root, relative);
@@ -36,5 +36,7 @@ export default async function handler(request) {
     return new Response("Not found", { status: 404 });
   }
 }
+
+export default { fetch: handler };
 `
 );
