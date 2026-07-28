@@ -18,31 +18,24 @@ fs.writeFileSync(
 
 fs.writeFileSync(
   path.join(dist, "server", "index.js"),
-  `const http = require("node:http");
-const fs = require("node:fs");
-const path = require("node:path");
+  `import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = path.join(__dirname, "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".svg": "image/svg+xml", ".md": "text/markdown" };
 
-function handler(req, res) {
-  const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
+export default async function handler(request) {
+  const pathname = decodeURIComponent(new URL(request.url).pathname);
   const relative = pathname === "/" ? "index.html" : pathname.replace(/^\\/+/, "");
   const file = path.resolve(root, relative);
-  if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
-    res.writeHead(404);
-    res.end("Not found");
-    return;
+  if (!file.startsWith(root)) return new Response("Not found", { status: 404 });
+  try {
+    const body = await readFile(file);
+    return new Response(body, { headers: { "content-type": types[path.extname(file)] || "application/octet-stream" } });
+  } catch {
+    return new Response("Not found", { status: 404 });
   }
-  res.writeHead(200, { "Content-Type": types[path.extname(file)] || "application/octet-stream" });
-  fs.createReadStream(file).pipe(res);
-}
-
-module.exports = handler;
-module.exports.default = handler;
-
-if (require.main === module) {
-  http.createServer(handler).listen(Number(process.env.PORT || 3000));
 }
 `
 );
