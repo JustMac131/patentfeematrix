@@ -20,9 +20,8 @@ fs.writeFileSync(
   path.join(dist, "server", "index.js"),
   `import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const cwd = process.cwd();
+const root = path.basename(cwd) === "dist" ? cwd : path.join(cwd, "dist");
 const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".svg": "image/svg+xml", ".md": "text/markdown" };
 
 export default async function handler(request) {
