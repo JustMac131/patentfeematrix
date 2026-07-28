@@ -1,6 +1,6 @@
-# Patent Fee Calculator (GitHub Pages Ready)
+# Patent Cost Desk
 
-Static single-page calculator for:
+Source-linked, static single-page patent filing-cost planner for:
 - India
 - EP (EPO)
 - US
@@ -12,12 +12,14 @@ Static single-page calculator for:
 - Australia
 
 It supports:
-- Single jurisdiction mode
-- All-jurisdictions mode
-- Applicant type, application type, prior-art options
-- Claim/page sensitivity for jurisdictions with formula-based fees
-- Live INR conversion with source note (Frankfurter/ECB)
-- Editable professional fee assumptions
+- A transparent single-office filing scenario
+- Direct, provisional and PCT international filing routes where the model supports them
+- Eligibility-aware India and USPTO fee categories
+- Claim/page sensitivity for the United States, Korea, Japan, China, Australia and PCT
+- Live INR reference conversion via Frankfurter, with static fallbacks
+- Optional professional-cost inputs that default to zero
+- A cross-office comparison view with clearly labelled baseline categories
+- Source, assumption and exclusion disclosures for every scenario
 
 ## Files
 - `index.html` - UI shell
@@ -37,22 +39,9 @@ Open:
 
 `http://localhost:8080`
 
-## Deploy to GitHub Pages
-
-1. Create a GitHub repository and push these files to the default branch.
-2. In GitHub repo settings, open `Pages`.
-3. Set source as:
-   - Deploy from branch
-   - Branch: `main` (or your default)
-   - Folder: `/ (root)`
-4. Save; GitHub will publish your URL:
-   - `https://<username>.github.io/<repo-name>/`
-
-If you publish from a user root repo (`<username>.github.io`), the URL will be:
-- `https://<username>.github.io/`
-
 ## Data updates
 
 When fee schedules change:
-1. Update constants in `app.js`.
-2. Update notes in `SOURCES.md`.
+1. Verify values against the primary links in `SOURCES.md`.
+2. Update the fee logic and source notes together.
+3. Keep costs that cannot be supported by a general published schedule in the exclusions list or as explicit user-entered inputs.

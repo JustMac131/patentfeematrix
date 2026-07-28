@@ -1,96 +1,46 @@
-# Patent Fee Inputs and Verification Notes
+# Patent Cost Desk: Data Scope
 
-Last curated: **February 19, 2026**
+Last reviewed: **July 2026**
 
-This project separates:
-- **Government fees**: sourced from official patent-office/government schedules.
-- **Professional fees**: editable estimates in the UI (firm-specific, not official).
+## What the calculator does
 
-## Jurisdiction Inputs Used in `app.js`
+The calculator estimates a **filing-stage baseline**. It keeps two categories separate:
 
-### India (INR)
-- Filing fee: `1600` (natural/startup/small) / `8000` (other than natural/startup/small)
-- Examination request (Form 18): `4000` / `20000`
-- PCT transmittal fee (RO/IN): `3200` / `16000`
-- Sources:
-  - https://ipindia.gov.in/writereaddata/Portal/ev/rules/patent-rules-2003-12-08-2024.pdf
-  - https://www.jpo.go.jp/e/system/laws/rule/guideline/document/index/fourth_schedule.pdf
+- **Official fees** are published fees from the patent-office sources linked in the interface.
+- **Professional costs** are optional user-entered values and start at zero. They are not official fees and are never changed by applicant status.
 
-### United States (USD)
-- Utility nonprovisional baseline:
-  - Large: filing `350`, search `770`, exam `880`
-  - Small: filing `70`, search `308`, exam `352`
-  - Micro: filing `70`, search `154`, exam `176`
-- Provisional filing:
-  - Large `325`, small `130`, micro `65`
-- PCT national stage baseline:
-  - Large `350 + 770 + 880`
-  - Small `140 + 308 + 352`
-  - Micro `70 + 154 + 176`
-- Source:
-  - https://www.uspto.gov/learning-and-resources/fees-and-payment/uspto-fee-schedule
+The result identifies the components included in the total and the material costs that are outside its scope. It is not a filing quote or legal advice.
 
-### EP / EPO (EUR)
-- Before April 1, 2026:
-  - Filing `135`, search `1520`, designation `685`, examination `1915`
-- On/after April 1, 2026:
-  - Filing `135`, search `1595`, designation `720`, examination `2010`
-- Source:
-  - https://www.epo.org/en/applying/fees
+## Current fee baselines encoded
 
-### United Kingdom (GBP)
-- Before April 1, 2026:
-  - Direct: filing `60`, search `150`, exam `100`
-  - PCT national phase baseline: entry `30`, search `120`, exam `100`
-- On/after April 1, 2026 (modeled from published proposal context):
-  - Direct: filing `75`, search `200`, exam `130`
-  - PCT baseline modeled: entry `30`, search `160`, exam `130`
-- Sources:
-  - https://www.gov.uk/government/publications/patent-forms-and-fees/patent-forms-and-fees
-  - https://www.gov.uk/government/consultations/patent-fees-proposal-to-increase-fees-in-april-2026
+| Office / route | Fee components included |
+| --- | --- |
+| India | Filing and examination; provisional filing only for a provisional scenario; reduced and other applicant categories. |
+| United States | Utility filing, search, examination, excess independent and total claim fees, and multiple-dependent claim fee; provisional filing. |
+| EPO | Direct filing, search, designation and examination fees effective 1 April 2026. |
+| United Kingdom | Online application fee at filing, search and examination fees effective 1 April 2026. |
+| Korea | Electronic filing, substantive-examination basic fee and per-claim fee. |
+| Japan | Filing, examination basic fee and per-claim fee. |
+| China | Invention filing, publication printing, examination, excess-claim and excess-page tiers. |
+| Australia | Preferred-means filing, examination and post-2024 excess-claim bands; provisional filing. |
+| PCT | International filing fee, page surcharge, selected e-filing reduction and any confirmed manual receiving-office / ISA add-on. |
 
-### Korea (KRW)
-- Electronic filing fee: `46000`
-- Examination request: `166000 + 51000 * claim_count`
-- Source:
-  - https://www.kipo.go.kr/en/HtmlApp?c=01080303&catmenu=m03_05_02
+## Deliberate exclusions
 
-### Japan (JPY)
-- Filing: `14000`
-- Examination request: `138000 + 4000 * claim_count`
-- Source:
-  - https://www.jpo.go.jp/e/system/process/tesuryo/hyoujyun_kaitei.html
+The calculator does not attempt to guess values for components which vary materially by route, office or facts. These include national-phase / Euro-PCT entry, ISA and receiving-office fees, translations, post-grant validation, attorney or foreign-agent charges, drawings, taxes, grant fees, renewals, late fees, restoration, appeals and oppositions. The scenario result repeats the most relevant exclusions for the selected office.
 
-### China (CNY)
-- Application fee: `900`
-- Publication printing fee: `50`
-- Substantive examination request: `2500`
-- Additional claim fee in model: `150 * (claims_over_10)`
-- Additional pages in model: `50 * (pages_over_30)`
-- Source:
-  - https://english.cnipa.gov.cn/transfer/news/officialinformation/1117615.htm
+## Primary sources
 
-### Australia (AUD)
-- Provisional filing: `100`
-- Standard patent filing: `400`
-- Examination request: `550`
-- Source:
-  - https://www.ipaustralia.gov.au/manage-my-ip/fees-and-payment/patent-fees
+- India: https://ipindia.gov.in/patents-before-you-apply-forms-official-fees
+- United States: https://www.uspto.gov/learning-and-resources/fees-and-payment/uspto-fee-schedule
+- EPO: https://www.epo.org/en/applying/fees/fees
+- United Kingdom: https://www.gov.uk/government/publications/intellectual-property-office-new-fees-from-1-april-2026
+- Korea: https://www.kipo.go.kr/en/HtmlApp?c=92004
+- Japan: https://www.jpo.go.jp/e/system/process/tesuryo/
+- China: https://english.cnipa.gov.cn/col/col3000/index.html
+- Australia: https://www.ipaustralia.gov.au/patents/timeframes-and-fees/
+- PCT / WIPO: https://www.wipo.int/en/web/pct-system/fees/index
 
-### PCT / International (CHF)
-- International filing fee (first 30 pages): `1330`
-- Page surcharge: `15` per page above 30
-- Optional e-filing reduction in model: `100/200/300`
-- Source:
-  - https://www.wipo.int/pct/en/guide/fees.html
+## Currency conversion
 
-## FX Conversion
-- Live rates are fetched from:
-  - https://www.frankfurter.app/
-- Conversion shown on each card: `1 local currency = X INR`.
-- If live fetch fails, fallback rates are used temporarily.
-
-## Important Limitations
-- Patent fee schedules change. Always verify against the official source at filing time.
-- This tool does not fully encode every special case (late fees, restoration, multiple priorities, formal drawings, translations, excess independent claims, etc.).
-- EP post-grant validation values in the UI are **user-entered estimates**, not official EPO schedule entries.
+The app fetches reference rates from Frankfurter when available. The INR figure is a planning conversion, not a payment amount or locked exchange rate. Static fallback rates are used only if the live reference feed cannot be reached.
